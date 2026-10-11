@@ -1,0 +1,6 @@
+# Compatible-release pins (see README "Dependency versions").
+Django~=5.2.0
+djangorestframework~=3.16.0
+django-cors-headers~=4.7
+psycopg[binary]~=3.2.0
+python-dotenv~=1.0
