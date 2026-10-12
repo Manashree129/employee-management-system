@@ -5,6 +5,7 @@ from . import views
 # Routes accept an optional trailing slash; the documented form has none.
 urlpatterns = [
     re_path(r"^employees/?$", views.EmployeeListCreateView.as_view(), name="employee-list"),
+    re_path(r"^employees/export/?$", views.EmployeeExportView.as_view(), name="employee-export"),
     re_path(r"^employees/(?P<pk>\d+)/?$", views.EmployeeDetailView.as_view(), name="employee-detail"),
     re_path(r"^departments/?$", views.DepartmentListCreateView.as_view(), name="department-list"),
     re_path(r"^departments/(?P<pk>\d+)/?$", views.DepartmentDetailView.as_view(), name="department-detail"),

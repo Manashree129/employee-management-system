@@ -1,4 +1,4 @@
-import { request } from './http';
+import { request, requestFile } from './http';
 
 export const EMPLOYEE_FORM = 'employee';
 
@@ -12,6 +12,8 @@ export const employeeApi = {
   create: (body) => request('/employees', { method: 'POST', body }),
   update: (id, body) => request(`/employees/${id}`, { method: 'PUT', body }),
   remove: (id) => request(`/employees/${id}`, { method: 'DELETE' }),
+  exportCsv: (params, signal) =>
+    requestFile('/employees/export', { params, signal }),
 };
 
 export const departmentApi = {

@@ -10,6 +10,7 @@ import Spinner from '../components/Spinner';
 import StatusBadge from '../components/StatusBadge';
 import { useToast } from '../context/ToastContext';
 import { formatDate } from '../utils/format';
+import { todayISO } from '../utils/formRules';
 import EmployeeDetailModal from './EmployeeDetailModal';
 
 const DEFAULT_QUERY = { page: 1, size: 10, search: '', departmentId: '', status: '', sortBy: 'name', sortDir: 'asc' };
@@ -43,6 +44,7 @@ export default function EmployeeListPage() {
   const [viewId, setViewId] = useState(null);
   const [toDelete, setToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Filter dropdown options come from the backend.
   useEffect(() => {
@@ -119,18 +121,63 @@ export default function EmployeeListPage() {
     }
   };
 
+  
+  const handleExport = async () => {
+    setExporting(true);
+
+    try {
+      const { search, departmentId, status, sortBy, sortDir } = query;
+
+      const blob = await employeeApi.exportCsv({
+        search,
+        departmentId,
+        status,
+        sortBy,
+        sortDir,
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `employees_${todayISO()}.csv`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      notify('success', 'Employee list exported to CSV.');
+    } catch (err) {
+      notify('error', `Export failed: ${err.message}`);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+
   const filtersActive = query.search || query.departmentId || query.status;
   const items = result?.items || [];
   const pagination = result?.pagination;
 
   return (
     <>
-      <div className="page-header">
+     <div className="page-header">
         <h1>Employees</h1>
-        <Link to="/employees/new" className="btn btn--primary">
-          Add Employee
-        </Link>
+        <div className="row-actions">
+          <Button
+            variant="secondary"
+            onClick={handleExport}
+            loading={exporting}
+            disabled={loading || items.length === 0}
+          >
+            {exporting ? 'Exporting…' : 'Export CSV'}
+          </Button>
+          <Link to="/employees/new" className="btn btn--primary">
+            Add Employee
+          </Link>
+        </div>
       </div>
+
 
       {filterError && <Alert type="warning">{filterError}</Alert>}
 

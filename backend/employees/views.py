@@ -1,5 +1,8 @@
 """Thin API views: parse input, call services, shape the JSON response."""
-from django.http import JsonResponse
+import csv
+
+from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
 from rest_framework.views import APIView
 
 from . import services
@@ -59,6 +62,57 @@ class EmployeeDetailView(APIView):
     def delete(self, request, pk):
         services.soft_delete_employee(pk)
         return success_response({"id": pk}, "Employee deleted successfully.")
+    
+    
+# Columns match the employee table on the list page.
+EXPORT_COLUMNS = [
+    "Employee Code",
+    "First Name",
+    "Last Name",
+    "Email",
+    "Department",
+    "Designation",
+    "Joining Date",
+    "Status",
+]
+
+
+def _csv_safe(value):
+    """Prevent spreadsheet formula injection."""
+    text = "" if value is None else str(value)
+    if text and text[0] in ("=", "+", "-", "@", "\t", "\r"):
+        return "'" + text
+    return text
+
+
+class EmployeeExportView(APIView):
+    """Export all matching employees as a CSV download."""
+
+    def get(self, request):
+        params = parse_employee_list_params(request.query_params)
+        employees = services.filter_employees(params)
+
+        filename = f"employees_{timezone.localdate().isoformat()}.csv"
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response.write("\ufeff")
+
+        writer = csv.writer(response)
+        writer.writerow(EXPORT_COLUMNS)
+
+        for employee in employees.iterator():
+            writer.writerow([
+                _csv_safe(employee.employee_code),
+                _csv_safe(employee.first_name),
+                _csv_safe(employee.last_name),
+                _csv_safe(employee.email),
+                _csv_safe(employee.department.name),
+                _csv_safe(employee.designation.name),
+                employee.joining_date.isoformat(),
+                "Active" if employee.is_active else "Inactive",
+            ])
+
+        return response
 
 
 # ---------------------------------------------------------------------------

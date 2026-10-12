@@ -57,3 +57,41 @@ export async function request(path, { method = 'GET', body, params, signal } = {
   }
   return payload.data;
 }
+
+/** Downloads a file (e.g. CSV). Returns a Blob or throws ApiError. */
+export async function requestFile(path, { params, signal } = {}) {
+  let response;
+
+  try {
+    response = await fetch(buildUrl(path, params), { signal });
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+
+    throw new ApiError(
+      'Cannot reach the server. Check that the backend is running and VITE_API_BASE_URL is correct.',
+      { code: 'NETWORK_ERROR' },
+    );
+  }
+
+  if (!response.ok) {
+    let payload = null;
+
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    throw new ApiError(
+      payload?.message || `Export failed with status ${response.status}.`,
+      {
+        status: response.status,
+        code: payload?.code || 'ERROR',
+        errors: payload?.errors || {},
+      },
+    );
+  }
+
+  return response.blob();
+}
+

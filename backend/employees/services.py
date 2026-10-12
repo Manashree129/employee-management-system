@@ -29,8 +29,8 @@ def get_employee(pk):
         raise NotFound("Employee not found.")
 
 
-def list_employees(params):
-    """Search / filter / sort / paginate. `params` comes from validators."""
+def filter_employees(params):
+    """Search / filter / sort without pagination: used by list and CSV export."""
     queryset = _live_employees()
 
     # Every whitespace-separated term must match name, email or employee code.
@@ -52,7 +52,12 @@ def list_employees(params):
 
     prefix = "-" if params["sort_dir"] == "desc" else ""
     ordering = [prefix + f for f in EMPLOYEE_SORT_FIELDS[params["sort_by"]]]
-    queryset = queryset.order_by(*ordering, prefix + "id")  # id keeps paging stable
+    return queryset.order_by(*ordering, prefix + "id")  # id keeps ordering stable
+
+
+def list_employees(params):
+    """Search / filter / sort / paginate. `params` comes from validators."""
+    queryset = filter_employees(params)
 
     page, size = params["page"], params["size"]
     total_items = queryset.count()
