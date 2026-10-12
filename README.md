@@ -36,6 +36,39 @@ employee-management-system/
 ```
 
 ## Features
+### CSV Export (Bonus Feature)
+
+The Employee Management System supports exporting employee records to a downloadable CSV file for reporting and analysis in spreadsheet applications such as Microsoft Excel.
+
+**Features**
+- Export employee records using the **Export CSV** button on the Employees page.
+- Exports all matching records, not just the current page of paginated results.
+- Respects the applied search, department filter, status filter, and sorting.
+- Excludes soft-deleted employees.
+- Includes the following columns:
+  - Employee Code
+  - First Name
+  - Last Name
+  - Email
+  - Department
+  - Designation
+  - Joining Date
+  - Status
+- Generates a date-stamped CSV filename.
+- Displays success or error notifications during export.
+
+**How to use**
+1. Start the Django backend and React frontend.
+2. Open the Employees page.
+3. Optionally apply search, department, status, or sorting criteria.
+4. Click **Export CSV**.
+5. Save the downloaded CSV file and open it in Excel or another spreadsheet application.
+
+**API Endpoint**
+
+`GET /api/employees/export`
+
+The endpoint accepts the same search, filter, and sorting query parameters as the employee listing endpoint. Pagination parameters are not used, allowing all matching employee records to be exported.
 
 ### Dashboard
 - Displays total, active, and inactive employee counts.
