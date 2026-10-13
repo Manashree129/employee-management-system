@@ -1,40 +1,39 @@
 # Employee Management System
-
 A full-stack Employee Management System built using React, Django REST Framework, and PostgreSQL. The application supports employee and department management, employee search, filtering, sorting, pagination, and configuration-driven forms.
 
 ## Project Structure
-
+```text
 employee-management-system/
 ├── .env.example
 ├── .gitignore
 ├── README.md
 ├── screenshots/
 ├── postman/
-│   └── Employee_Management_System_API_Testing.json
+│   └── Employee_Management_System_API_Testing.json
 ├── backend/
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── config/
-│   ├── employees/
-│   └── database/
-│       ├── schema.sql
-│       └── seed.sql
+│   ├── manage.py
+│   ├── requirements.txt
+│   ├── config/
+│   ├── employees/
+│   └── database/
+│       ├── schema.sql
+│       └── seed.sql
 └── frontend/
-    ├── .env.example
-    ├── package.json
-    ├── package-lock.json
-    ├── vite.config.js
-    ├── index.html
-    └── src/
-        ├── api/
-        ├── components/
-        ├── context/
-        ├── pages/
-        ├── utils/
-        ├── App.jsx
-        ├── main.jsx
-        └── styles.css
-
+    ├── .env.example
+    ├── package.json
+    ├── package-lock.json
+    ├── vite.config.js
+    ├── index.html
+    └── src/
+        ├── api/
+        ├── components/
+        ├── context/
+        ├── pages/
+        ├── utils/
+        ├── App.jsx
+        ├── main.jsx
+        └── styles.css
+```
 
 ## Features
 
@@ -88,14 +87,11 @@ employee-management-system/
 - Includes employee and organizational information in the exported file.
 - Generates a date-stamped filename.
 - Displays success or error notifications during export.
-
 **How to export employee data:**
-
 1. Open the Employees page.
 2. Optionally apply search, department, status, or sorting criteria.
-3. Click **Export CSV**.
+3. Click ****Export CSV****.
 4. Save the downloaded file and open it in Excel or another spreadsheet application.
-
 API endpoint: `GET /api/employees/export`
 
 ### 8. Additional Features
@@ -107,7 +103,6 @@ API endpoint: `GET /api/employees/export`
 - Backend API tests.
 
 ## Technology Stack
-
 | Component | Technology |
 |---|---|
 | Frontend | React |
@@ -120,9 +115,7 @@ API endpoint: `GET /api/employees/export`
 | Styling | CSS |
 
 ## Software Requirements
-
 The project dependencies are specified in `backend/requirements.txt` and `frontend/package.json`.
-
 | Software | Version / Requirement |
 |---|---|
 | Python | 3.10 or newer |
@@ -132,161 +125,133 @@ The project dependencies are specified in `backend/requirements.txt` and `fronte
 | Node.js | 18 or newer |
 | React | 18.x |
 | React Router | 6.x |
-
 Check the dependency files and installed versions before setting up the project.
 
 ## Installation and Setup
-
 The following instructions use Windows PowerShell.
 
 ### Prerequisites
-
 Install the following software:
-
 - Python
 - PostgreSQL
 - Node.js and npm
 - Git
 
 ### 1. Clone the repository
-
 ```powershell
+
 git clone https://github.com/Manashree129/employee-management-system.git
+
 cd employee-management-system
+
 ```
-
 ### 2. Create the PostgreSQL database
-
 Open PostgreSQL SQL Shell (`psql`) or another PostgreSQL client.
-
 Create the database:
-
-
+```sql
 CREATE DATABASE employee_db;
-
-
+```
 Use a PostgreSQL account with permission to connect to and modify this database.
 
 ### 3. Configure environment variables
-
 From the project root, create the local environment file:
-
 ```powershell
+
 Copy-Item .env.example .env
+
 ```
-
 Update `.env` with your local configuration. For example:
-
 ```dotenv
+
 DJANGO_SECRET_KEY=replace-with-a-unique-secret
+
 DJANGO_DEBUG=True
+
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+
 DJANGO_TIME_ZONE=Asia/Kolkata
 
 DB_NAME=employee_db
+
 DB_USER=your_postgres_username
+
 DB_PASSWORD=your_postgres_password
+
 DB_HOST=localhost
+
 DB_PORT=5432
 
 FRONTEND_ORIGIN=http://localhost:5173
+
 ```
-
 Replace the example values with your own PostgreSQL credentials and a unique Django secret key.
-
 Do not commit actual `.env` files or passwords to GitHub.
 
-### 4. Install backend dependencies
-
-From the project root:
+### 4. Check and Initialize the Database
+From the project root, enter the backend directory:
 
 ```powershell
 cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
 ```
 
-If PowerShell blocks virtual environment activation, use a terminal with permission to run the activation script or invoke the virtual environment's Python executable directly.
-
-### 5. Initialize the database
-
-First, inspect `database/schema.sql` and `database/seed.sql` from the `backend` directory.
-
-The database schema must be initialized before inserting seed data. Django migrations may also create application tables, so follow the schema and migration approach used by this project without creating the same tables twice.
-
-For a migration-managed database, run:
-
+Then run:
 ```powershell
+
 python manage.py check
+
 python manage.py migrate
+
 ```
+Django migrations create the database tables required by the application.
+**Important:** Do not execute `database/schema.sql` when setting up the application using Django migrations, as both may attempt to create the same tables.
 
-If `schema.sql` is required to create additional database objects or tables not managed by Django migrations, execute it using the PostgreSQL command-line client after confirming it does not conflict with the migrations:
-
+### 5. Load Sample Data
+After successfully applying the Django migrations, run:
 ```powershell
-psql -U your_postgres_username -d employee_db -f database/schema.sql
-```
 
-Replace `your_postgres_username` with your PostgreSQL username.
-
-### 6. Load sample data
-
-After initializing the required database schema, load the sample data:
-
-```powershell
 psql -U your_postgres_username -d employee_db -f database/seed.sql
+
 ```
-
-Use the PostgreSQL username configured for your database.
-
-If the seed script depends on tables or records that have not been created, initialize those prerequisites first. Avoid running seed scripts repeatedly if they insert duplicate records.
-
-### 7. Start the backend
-
+Replace `your_postgres_username` with your PostgreSQL username.
+Run this command only after the database has been initialized successfully. The seed script is intended for initial setup and should not be run repeatedly without checking whether it is safe to do so.
+### 6. Start the Backend
 From the `backend` directory, with the virtual environment activated:
-
 ```powershell
+
 python manage.py runserver
+
 ```
-
 Default backend URL:
-
 `http://localhost:8000`
-
 API base URL:
-
 `http://localhost:8000/api`
-
 Keep the backend terminal running.
 
-### 8. Configure and start the frontend
-
+### 7. Configure and Start the Frontend
 Open a second terminal at the project root.
-
 ```powershell
+
 cd frontend
+
 Copy-Item .env.example .env
+
 npm install
+
 npm run dev
-```
 
+```
 Ensure `frontend/.env` contains:
-
 ```dotenv
+
 VITE_API_BASE_URL=http://localhost:8000/api
+
 ```
-
 Open the frontend at:
-
 `http://localhost:5173`
-
 Keep the frontend terminal running.
-
 The frontend origin must match the origin permitted by the backend CORS configuration.
 
 ## Default URLs and Ports
-
 | Service | URL | Port |
 |---|---|---|
 | Frontend | `http://localhost:5173` | 5173 |
@@ -295,7 +260,6 @@ The frontend origin must match the origin permitted by the backend CORS configur
 | PostgreSQL | `localhost` | 5432 |
 
 ## Frontend Routes
-
 | Route | Description |
 |---|---|
 | `/` | Redirects to the dashboard |
@@ -304,27 +268,18 @@ The frontend origin must match the origin permitted by the backend CORS configur
 | `/employees/new` | Add employee |
 | `/employees/:id/edit` | Edit employee |
 | `/departments` | Department management |
-
 Employee details are displayed through a details dialog opened from the employee list.
 
 ## Configuration-Driven Form
-
 The employee form retrieves its field definitions from:
-
 `GET /api/form-config/employee`
-
 The form configuration is stored in the `form_field_configs` database table. The frontend interprets the configuration through reusable form components and the form rules utility.
-
 The form supports the implemented input types, including text, email, telephone, number, date, select, textarea, and checkbox inputs.
-
 The contract end date is displayed for Contract and Intern employees. Designation options depend on the selected department.
-
 Backend validation remains authoritative; changing frontend form configuration does not automatically change the backend's validation rules.
 
 ## API Overview
-
 All endpoints use the `/api` base path.
-
 | Resource | Method and Endpoint | Purpose |
 |---|---|---|
 | Employees | `GET /employees` | List, search, filter, sort, and paginate |
@@ -341,19 +296,14 @@ All endpoints use the `/api` base path.
 | Lookups | `GET /lookups/{category}` | Retrieve lookup options |
 | Form configuration | `GET /form-config/employee` | Retrieve employee form configuration |
 | Dashboard | `GET /dashboard/summary` | Retrieve dashboard statistics |
-
 Employee listing supports query parameters including `page`, `size`, `search`, `departmentId`, `status`, `sortBy`, and `sortDir`.
 
 ### Postman Collection
-
 The exported Postman collection is located at:
-
 `postman/Employee_Management_System_API_Testing.json`
-
 Import this JSON file into Postman to access the API requests.
 
 ## Validation and Business Rules
-
 - Employee codes are generated by the backend.
 - Employee email addresses are normalized and unique across employee records, including soft-deleted records.
 - Mobile numbers must contain exactly 10 digits.
@@ -365,31 +315,29 @@ Import this JSON file into Postman to access the API requests.
 - Soft-deleted employees are excluded from normal employee listings.
 
 ## Testing
-
 Run the following commands from the `backend` directory with the virtual environment activated.
 
 ### Django system check
-
 ```powershell
+
 python manage.py check
+
 ```
-
 ### Migration consistency check
-
 ```powershell
+
 python manage.py makemigrations --check --dry-run
+
 ```
 
 ### Backend tests
-
 ```powershell
+
 python manage.py test employees
+
 ```
-
 The backend tests cover employee listing and input validation, including required fields, invalid email addresses, invalid salary values, and future joining dates.
-
 With both servers running, manually verify:
-
 1. Dashboard statistics and department distribution.
 2. Employee search, filters, sorting, and pagination.
 3. Employee creation, details, editing, and deletion.
@@ -400,15 +348,10 @@ With both servers running, manually verify:
 8. Department deletion restrictions.
 9. Correct handling of soft-deleted employees.
 10. CSV export with and without filters.
-
 The supplied Postman collection can also be used to test the API endpoints.
-
 ## Screenshots
-
 The `screenshots/` directory contains screenshots demonstrating the application's main screens and functionality.
-
 Recommended screenshot coverage:
-
 | Filename | Description |
 |---|---|
 | `01-dashboard.png` | Dashboard and employee statistics |
@@ -422,38 +365,25 @@ Recommended screenshot coverage:
 | `09-departments.png` | Department management |
 | `10-department-delete-blocked.png` | Department deletion restriction |
 | `11-department-form.png` | Department creation or editing form |
-
 Ensure the filenames match the actual image files committed to the repository.
-
 ## Demo Video
-
 The demonstration video showcases the Employee Management System, including employee CRUD operations, department management, and dynamic form functionality.
-
 **[Watch Employee Management System Demo](https://drive.google.com/file/d/1DHDsAbBCcP6Vo5gSf0TFV7x0HN5h2wT3/view?usp=sharing)**
-
 The video is hosted on Google Drive. Ensure that anyone with the link can view it.
-
 ## Known Limitations and Incomplete Features
-
 - The application is intended to run locally using the setup instructions in this README.
 - The project does not claim bonus features such as JWT authentication with role-based access, profile photo uploads, audit history, frontend component tests, Swagger/OpenAPI documentation, Docker Compose, or a UI for editing form configuration unless those features are present and working in the submitted code.
 - Any additional incomplete assignment requirement should be documented here accurately.
-
 ## Assumptions
-
 - PostgreSQL is used as the persistent database.
 - Database credentials and environment-specific settings are supplied through environment variables.
 - Employee records are soft-deleted where the application implements soft deletion.
 - The evaluator will use the documented setup instructions and included sample data to run and evaluate the application.
 - The database initialization process must follow the actual schema, seed script, and migration dependencies in the repository.
-
 ## Security Considerations
-
 - Do not commit actual environment files containing credentials.
 - Use `.env.example` files as configuration templates without local secrets.
 - Exclude virtual environments, installed dependencies, and generated build files from version control.
 - Production deployment requires appropriate secret-key management, debug settings, allowed hosts, database permissions, and CORS configuration.
-
 ## License
-
 No open-source license is specified in this repository.
